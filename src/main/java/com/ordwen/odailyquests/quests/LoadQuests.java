@@ -12,6 +12,7 @@ import com.ordwen.odailyquests.rewards.Reward;
 import com.ordwen.odailyquests.rewards.RewardType;
 import com.ordwen.odailyquests.tools.ColorConvert;
 import io.th0rgal.oraxen.api.OraxenItems;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -131,7 +132,9 @@ public class LoadQuests {
                 /* quest menu item */
                 int cmd = questSection.isInt(".custom_model_data") ? questSection.getInt(".custom_model_data") : -1;
                 String presumedItem = questSection.getString(".menu_item");
-                ItemStack menuItem = getItemStackFromMaterial(presumedItem, fileName, questIndex, "menu_item", cmd);
+                ItemStack menuItem = presumedItem.startsWith("oraxen:")
+                        ? OraxenItems.getItemById(StringUtils.substringAfter(presumedItem, "oraxen:")).build()
+                        : getItemStackFromMaterial(presumedItem, fileName, questIndex, "menu_item", cmd);
 
                 /* reach type */
                 Location location = null;
