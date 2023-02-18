@@ -1,6 +1,7 @@
 package com.ordwen.odailyquests.apis;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.apis.hooks.items.OraxenHook;
 import com.ordwen.odailyquests.apis.hooks.eco.VaultHook;
 import com.ordwen.odailyquests.apis.hooks.holograms.HolographicDisplaysHook;
 import com.ordwen.odailyquests.apis.hooks.mobs.EliteMobsHook;
@@ -36,6 +37,7 @@ public class IntegrationsManager {
         loadPAPI();
         loadWildStacker();
         loadRoseStacker();
+        loadOraxen();
     }
 
     /**
@@ -133,5 +135,14 @@ public class IntegrationsManager {
             PluginLogger.info("PlaceholderAPI successfully hooked.");
         } else
             PluginLogger.warn("PlaceholderAPI not detected. Placeholders will not work.");
+    }
+
+    /**
+     * Hook - Oraxen
+     */
+    private void loadOraxen() {
+        if (OraxenHook.isOraxenSetup()) {
+            PluginLogger.info("Oraxen successfully hooked.");
+        }
     }
 }

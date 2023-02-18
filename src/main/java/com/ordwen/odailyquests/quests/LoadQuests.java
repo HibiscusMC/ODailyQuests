@@ -1,6 +1,7 @@
 package com.ordwen.odailyquests.quests;
 
 import com.ordwen.odailyquests.ODailyQuests;
+import com.ordwen.odailyquests.apis.hooks.items.OraxenHook;
 import com.ordwen.odailyquests.apis.hooks.mobs.EliteMobsHook;
 import com.ordwen.odailyquests.apis.hooks.mobs.MythicMobsHook;
 import com.ordwen.odailyquests.configuration.essentials.Modes;
@@ -10,6 +11,7 @@ import com.ordwen.odailyquests.files.QuestsFiles;
 import com.ordwen.odailyquests.rewards.Reward;
 import com.ordwen.odailyquests.rewards.RewardType;
 import com.ordwen.odailyquests.tools.ColorConvert;
+import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -189,8 +191,7 @@ public class LoadQuests {
                                             dyeColor = getDyeColor(presumedDyeColor, fileName, questIndex, presumedDyeColor);
                                         }
                                     }
-                                }
-                                else {
+                                } else {
                                     for (String presumedEntity : questSection.getStringList(".required_entity")) {
                                         EntityType entityType = getEntityType(fileName, questIndex, presumedEntity);
                                         entityTypes.add(entityType);
@@ -226,13 +227,19 @@ public class LoadQuests {
                                         requiredItem.setItemMeta(meta);
 
                                         requiredItems.add(requiredItem);
+                                    } else if (itemType.equals("ORAXEN_ITEM") && OraxenHook.isOraxenSetup()) {
+                                        String itemID = file.getConfigurationSection("quests." + fileQuest + ".oraxen_item").getString("id");
+                                        requiredItems.add(OraxenItems.getItemById(itemID).build());
                                     } else {
                                         ItemStack requiredItem = getItemStackFromMaterial(itemType, fileName, questIndex, "required_item", -1);
 
                                         if (itemType.equals("POTION") || itemType.equals("SPLASH_POTION") || itemType.equals("LINGERING_POTION")) {
-                                            if (questSection.contains("potion.type")) potionType = PotionType.valueOf(questSection.getString("potion.type"));
-                                            if (questSection.contains("potion.upgraded")) upgraded = questSection.getBoolean("potion.upgraded");
-                                            if (questSection.contains("potion.extended")) extended = questSection.getBoolean("potion.extended");
+                                            if (questSection.contains("potion.type"))
+                                                potionType = PotionType.valueOf(questSection.getString("potion.type"));
+                                            if (questSection.contains("potion.upgraded"))
+                                                upgraded = questSection.getBoolean("potion.upgraded");
+                                            if (questSection.contains("potion.extended"))
+                                                extended = questSection.getBoolean("potion.extended");
 
                                             if (upgraded && extended) {
                                                 PluginLogger.error("-----------------------------------");
@@ -242,9 +249,7 @@ public class LoadQuests {
                                                 PluginLogger.error("Reason : Potion cannot be both upgraded and extended.");
                                                 PluginLogger.error("-----------------------------------");
 
-                                            }
-
-                                            else {
+                                            } else {
                                                 PotionMeta meta = (PotionMeta) menuItem.getItemMeta();
                                                 meta.setBasePotionData(new PotionData(potionType, extended, upgraded));
                                                 menuItem.setItemMeta(meta);
@@ -259,9 +264,12 @@ public class LoadQuests {
                                         ItemStack requiredItem = getItemStackFromMaterial(itemType, fileName, questIndex, "required_item", cmd);
 
                                         if (itemType.equals("POTION") || itemType.equals("SPLASH_POTION") || itemType.equals("LINGERING_POTION")) {
-                                            if (questSection.contains("potion.type")) potionType = PotionType.valueOf(questSection.getString("potion.type"));
-                                            if (questSection.contains("potion.upgraded")) upgraded = questSection.getBoolean("potion.upgraded");
-                                            if (questSection.contains("potion.extended")) extended = questSection.getBoolean("potion.extended");
+                                            if (questSection.contains("potion.type"))
+                                                potionType = PotionType.valueOf(questSection.getString("potion.type"));
+                                            if (questSection.contains("potion.upgraded"))
+                                                upgraded = questSection.getBoolean("potion.upgraded");
+                                            if (questSection.contains("potion.extended"))
+                                                extended = questSection.getBoolean("potion.extended");
 
                                             if (upgraded && extended) {
                                                 PluginLogger.error("-----------------------------------");
@@ -270,9 +278,7 @@ public class LoadQuests {
                                                 PluginLogger.error("Quest number : " + (questIndex + 1));
                                                 PluginLogger.error("Reason : Potion cannot be both upgraded and extended.");
                                                 PluginLogger.error("-----------------------------------");
-                                            }
-
-                                            else {
+                                            } else {
                                                 PotionMeta meta = (PotionMeta) menuItem.getItemMeta();
                                                 meta.setBasePotionData(new PotionData(potionType, extended, upgraded));
                                                 menuItem.setItemMeta(meta);
@@ -382,8 +388,7 @@ public class LoadQuests {
                             quest = new VillagerQuest(base, requiredItems, profession, villagerLevel);
                         } else if (questType == QuestType.LOCATION) {
                             quest = new LocationQuest(base, location, radius);
-                        }
-                        else {
+                        } else {
                             quest = new ItemQuest(base, requiredItems);
                         }
                     }
@@ -405,8 +410,8 @@ public class LoadQuests {
     }
 
     /**
-     * @param material the material to get
-     * @param fileName the file name
+     * @param material   the material to get
+     * @param fileName   the file name
      * @param questIndex the quest index
      * @return the item stack
      */
@@ -435,9 +440,9 @@ public class LoadQuests {
     }
 
     /**
-     * @param fileName the file name
+     * @param fileName   the file name
      * @param questIndex the quest index
-     * @param value the value
+     * @param value      the value
      * @return the entity type
      */
     private static EntityType getEntityType(String fileName, int questIndex, String value) {
@@ -457,10 +462,10 @@ public class LoadQuests {
     }
 
     /**
-     * @param dye the dye to get
-     * @param fileName the file name
+     * @param dye        the dye to get
+     * @param fileName   the file name
      * @param questIndex the quest index
-     * @param value the value
+     * @param value      the value
      * @return the dye color
      */
     private static DyeColor getDyeColor(String dye, String fileName, int questIndex, String value) {
