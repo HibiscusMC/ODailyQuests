@@ -44,6 +44,7 @@ public final class ODailyQuests extends JavaPlugin {
     private TimerTask timerTask;
     private ReloadService reloadService;
     private DatabaseManager databaseManager;
+    private String storage_mode;
 
     @Override
     public void onEnable() {
@@ -66,11 +67,8 @@ public final class ODailyQuests extends JavaPlugin {
         checkForSpigotUpdate();
 
         /* Load SQL Support */
-        switch (configurationFiles.getConfigFile().getString("storage_mode")) {
-            case "MySQL" -> this.sqlManager = new MySQLManager(this);
-            case "H2" -> this.sqlManager = new H2Manager(this);
-            default -> this.yamlManager = new YamlManager();
-        }
+        storage_mode = configurationFiles.getConfigFile().getString("storage_mode");
+        setupStorage();
 
         /* Load class instances */
         this.interfacesManager = new InterfacesManager(this);
@@ -174,6 +172,7 @@ public final class ODailyQuests extends JavaPlugin {
      * @return MySQLManager instance.
      */
     public SQLManager getSQLManager() {
+        if (sqlManager.getConnection() == null) setupStorage();
         return sqlManager;
     }
 
@@ -223,6 +222,14 @@ public final class ODailyQuests extends JavaPlugin {
      */
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    private void setupStorage() {
+        switch (storage_mode.toLowerCase()) {
+            case "mysql" -> this.sqlManager = new MySQLManager(this);
+            case "h2" -> this.sqlManager = new H2Manager(this);
+            default -> this.yamlManager = new YamlManager();
+        }
     }
 }
 
